@@ -1,4 +1,3 @@
-import os
 import logging
 import time
 from lib.waveshare_epd import epd2in13 # type: ignore
@@ -26,11 +25,13 @@ def main_screen(epd):
 
     news = draw_news(draw)
 
-    epd.display(epd.getbuffer(canvas)) 
+    epd.display(epd.getbuffer(canvas))
 
-    iteration = 1
+    iteration = 0
     while (True):
+        iteration = iteration + 1
         every = with_interval(iteration)
+
         time_now = get_time()
         date_now = get_date()
         updated = False
@@ -40,7 +41,7 @@ def main_screen(epd):
             news = draw_news(draw)
             updated = True
             partial = False
-        elif(every('10m')):
+        elif(every('1m')):
             draw_news(draw, iteration % len(news), news)
             updated = True
 
@@ -63,8 +64,6 @@ def main_screen(epd):
             else:
                 epd.init(epd.lut_full_update)
             epd.display(epd.getbuffer(canvas))
-
-        iteration = iteration + 1
 
         time.sleep(60)
 
