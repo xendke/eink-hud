@@ -1,9 +1,9 @@
 import os
 import socket
 from datetime import datetime
-from newsapi import NewsApiClient # type: ignore
-from pyowm.owm import OWM # type: ignore
-from dotenv import load_dotenv # type: ignore
+from newsapi import NewsApiClient
+from pyowm.owm import OWM
+from dotenv import load_dotenv
 
 load_dotenv()
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')

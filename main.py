@@ -1,12 +1,12 @@
 import logging
 import time
-from lib.waveshare_epd import epd2in13 # type: ignore
-from PIL import Image, ImageDraw # type: ignore
+from lib.waveshare_epd import epd2in13
+from PIL import Image, ImageDraw
 
-from utils import get_date, get_time, with_interval # type: ignore
-from draw import draw_news, draw_weather, draw_time, draw_date, font_square, white, black # type: ignore
-from assets import background # type: ignore
-from const import HEIGHT, WIDTH # type: ignore
+from utils import get_date, get_time, with_interval
+from draw import draw_news, draw_weather, draw_time, draw_date, font_square, white, black
+from assets import background
+from const import HEIGHT, WIDTH
 
 logging.basicConfig(level=logging.DEBUG)
 

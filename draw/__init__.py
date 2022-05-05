@@ -1,9 +1,9 @@
 import os
 import textwrap
 
-from utils import get_date, get_time, fetch_news, fetch_weather # type: ignore
+from utils import get_date, get_time, fetch_news, fetch_weather
 from assets import font_square, font_weather, font_small, font_smallest
-from const import HEIGHT, WIDTH # type: ignore
+from const import HEIGHT, WIDTH
 
 # colors
 black = 0
