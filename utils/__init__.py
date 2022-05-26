@@ -1,5 +1,8 @@
 import os
 import socket
+import logging
+import requests
+
 from datetime import datetime
 from newsapi import NewsApiClient
 from pyowm.owm import OWM
@@ -34,35 +37,49 @@ def get_date():
 def get_time():
     return datetime.now().strftime("%I:%M%p")
 
+def fetch_news_mock():
+    return ['mock news ..', 'mock news ..', 'mock news ..']
+
+
+news_api = NewsApiClient(NEWS_API_KEY)
+
 def fetch_news():
-    def trim_title(title):
-        truncated = title[:90] + (title[90:] and '..')
-        return truncated
-    api = NewsApiClient(NEWS_API_KEY)
-    response = api.get_top_headlines(sources=SOURCES, page_size=3)
-    result = [trim_title(article['title']) for article in response['articles']]
-    return result
+    try:
+        def trim_title(title):
+            truncated = title[:90] + (title[90:] and '..')
+            return truncated
+        response = news_api.get_top_headlines(sources=SOURCES, page_size=50)
+        result = [trim_title(article['title']) for article in response['articles']]
+        return result
+    except:
+        logging.exception('news api failed')
+        return fetch_news_mock()
 
 
 def fetch_weather_mock():
-    return [{'temp': '56', 'icon': 'b', 'label': 'Sun'}, {'temp': '59', 'icon': 'c', 'label': 'Mon'}, {'temp': '60', 'icon': 'f', 'label': 'Tue'}]
+    return [{'temp': '00', 'icon': 'b', 'label': 'Sun'}, {'temp': '00', 'icon': 'c', 'label': 'Mon'}, {'temp': '00', 'icon': 'f', 'label': 'Tue'}]
+
+open_weather_map = OWM(WEATHER_API_KEY)
+weather_api = open_weather_map.weather_manager()
 
 def fetch_weather():
-    owm = OWM(WEATHER_API_KEY)
-    mgr = owm.weather_manager()
-    one_call = mgr.one_call(lat=41.032730, lon=-73.766327, exclude='minutely,hourly')
+    try: 
+        one_call = weather_api.one_call(lat=41.032730, lon=-73.766327, exclude='minutely,hourly')
 
-    result = []
-    for i in range(0,3):
-        day = {}
-        temp = one_call.forecast_daily[i].temperature('fahrenheit').get('feels_like_day', None)
-        week_day = datetime.fromtimestamp(one_call.forecast_daily[i].reference_time()).strftime("%a")
-        day['temp'] = str(round(temp))
-        day['label'] = week_day.upper()
-        day['icon'] = WEATHER_ICONS[one_call.forecast_daily[i].weather_icon_name]
-        result.append(day)
+        result = []
+        for i in range(0,3):
+            day = {}
+            temp = one_call.forecast_daily[i].temperature('fahrenheit').get('feels_like_day', None)
+            week_day = datetime.fromtimestamp(one_call.forecast_daily[i].reference_time()).strftime("%a")
+            day['temp'] = str(round(temp))
+            day['label'] = week_day.upper()
+            day['icon'] = WEATHER_ICONS[one_call.forecast_daily[i].weather_icon_name]
+            result.append(day)
 
-    return result
+        return result
+    except:
+        logging.exception('weather api failed')
+        return fetch_weather_mock()
 
 def with_interval(current):
     def every(interval):

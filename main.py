@@ -8,27 +8,43 @@ from draw import draw_news, draw_weather, draw_time, draw_date, font_square, whi
 from assets import background
 from const import HEIGHT, WIDTH
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    filename='/home/pi/eink.log',
+    filemode='a',
+    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.DEBUG
+)
 
 def main_screen(epd):
-    canvas = Image.new('1', (HEIGHT, WIDTH), white)
-    canvas.paste(background, (0,0))
-
-    draw = ImageDraw.Draw(canvas)
-    
-    draw.text((7,7), 'Weather', font = font_square, fill = black)
-
-    draw_weather(draw)
-
-    previous_date = draw_date(draw)
-    previous_time = draw_time(draw)
-
-    news = draw_news(draw)
-
-    epd.display(epd.getbuffer(canvas))
-
     iteration = 0
+    initiated = False
     while (True):
+        if(not initiated):
+            epd.init(epd.lut_full_update)
+            epd.Clear(0x00)
+
+            canvas = Image.new('1', (HEIGHT, WIDTH), white)
+            canvas.paste(background, (0,0))
+
+            draw = ImageDraw.Draw(canvas)
+            
+            draw.text((7,7), 'Weather', font = font_square, fill = black)
+
+            draw_weather(draw)
+
+            previous_date = draw_date(draw)
+            previous_time = draw_time(draw)
+
+            news = draw_news(draw)
+
+            epd.display(epd.getbuffer(canvas))
+            epd.sleep()
+            time.sleep(60)
+            initiated = True
+            
+            continue
+
         iteration = iteration + 1
         every = with_interval(iteration)
 
@@ -37,15 +53,17 @@ def main_screen(epd):
         updated = False
         partial = True
 
-        if(every('1h')):
+        if(every('12h')):
             news = draw_news(draw)
             updated = True
             partial = False
-        elif(every('1m')):
+        elif(every('5m')):
             draw_news(draw, iteration % len(news), news)
             updated = True
+            if(every('20m')):
+                partial = False
 
-        if(every('6h')):
+        if(every('3h')):
             draw_weather(draw)
             updated = True
             partial = False
@@ -64,6 +82,8 @@ def main_screen(epd):
             else:
                 epd.init(epd.lut_full_update)
             epd.display(epd.getbuffer(canvas))
+            epd.sleep()
+
 
         time.sleep(60)
 
@@ -73,8 +93,6 @@ if __name__ == '__main__':
         
         epd = epd2in13.EPD()
         logging.info("Clearing Screen...")
-        epd.init(epd.lut_full_update)
-        epd.Clear(0x00)
 
         main_screen(epd)
             
