@@ -1,12 +1,12 @@
 import os
 import socket
 import logging
-import requests
 
 from datetime import datetime
 from newsapi import NewsApiClient
 from pyowm.owm import OWM
 from dotenv import load_dotenv
+from const import WEATHER_COUNT
 
 load_dotenv()
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
@@ -46,9 +46,9 @@ news_api = NewsApiClient(NEWS_API_KEY)
 def fetch_news():
     try:
         def trim_title(title):
-            truncated = title[:90] + (title[90:] and '..')
+            truncated = title[:180] + (title[180:] and '..')
             return truncated
-        response = news_api.get_top_headlines(sources=SOURCES, page_size=50)
+        response = news_api.get_top_headlines(sources=SOURCES, page_size=30)
         result = [trim_title(article['title']) for article in response['articles']]
         return result
     except:
@@ -57,7 +57,10 @@ def fetch_news():
 
 
 def fetch_weather_mock():
-    return [{'temp': '00', 'icon': 'b', 'label': 'Sun'}, {'temp': '00', 'icon': 'c', 'label': 'Mon'}, {'temp': '00', 'icon': 'f', 'label': 'Tue'}]
+    mock = []
+    for _ in range(0, WEATHER_COUNT):
+        mock.append({'temp': '00', 'icon': 'b', 'label': 'Sun'})
+    return mock
 
 open_weather_map = OWM(WEATHER_API_KEY)
 weather_api = open_weather_map.weather_manager()
@@ -67,7 +70,7 @@ def fetch_weather():
         one_call = weather_api.one_call(lat=41.032730, lon=-73.766327, exclude='minutely,hourly')
 
         result = []
-        for i in range(0,3):
+        for i in range(0, WEATHER_COUNT):
             day = {}
             temp = one_call.forecast_daily[i].temperature('fahrenheit').get('feels_like_day', None)
             week_day = datetime.fromtimestamp(one_call.forecast_daily[i].reference_time()).strftime("%a")
