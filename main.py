@@ -130,7 +130,7 @@ def render_news(epd, iteration):
         time.sleep(60)
     return update
 
-def main_screen(epd):
+def render_loop(epd):
     global_iteration = 0
 
     all_screens = [{
@@ -186,7 +186,7 @@ if __name__ == '__main__':
         epd = epd2in13.EPD()
         logging.info("Clearing Screen...")
 
-        main_screen(epd)
+        render_loop(epd)
             
     except IOError as e:
         logging.info(e)
