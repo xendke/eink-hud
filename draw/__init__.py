@@ -10,7 +10,7 @@ white = 255
 
 def draw_news(draw, index = 0, cache = None):
     current_news = cache if cache else fetch_news() 
-    single_news = "\n".join(textwrap.wrap(current_news[index], width=38))
+    single_news = "\n".join(textwrap.wrap(current_news[index], width=37))
     draw.multiline_text((HEIGHT/2, 60), single_news, font = font_smallest, fill = black, anchor = "mm")
     return current_news
 

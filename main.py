@@ -34,7 +34,6 @@ def render_weather(epd, iteration):
 
     epd.display(epd.getbuffer(canvas))
     epd.sleep()
-    time.sleep(60)
 
     def update():
         nonlocal previous_date
@@ -67,8 +66,6 @@ def render_weather(epd, iteration):
             epd.display(epd.getbuffer(canvas))
             epd.sleep()
 
-
-        time.sleep(60)
     return update
 
 def render_news(epd, iteration):
@@ -89,7 +86,6 @@ def render_news(epd, iteration):
 
     epd.display(epd.getbuffer(canvas))
     epd.sleep()
-    time.sleep(60)
 
     def update():
         nonlocal previous_date
@@ -126,11 +122,9 @@ def render_news(epd, iteration):
             epd.display(epd.getbuffer(canvas))
             epd.sleep()
 
-
-        time.sleep(60)
     return update
 
-def render_loop(epd):
+def main_loop(epd):
     global_iteration = 0
 
     all_screens = [{
@@ -162,7 +156,7 @@ def render_loop(epd):
                 renderer = render_weather(epd, iteration)
                 current_screen['initiated'] = True
 
-        
+
         if(current == 'news'):
             if(initiated):
                 renderer()
@@ -176,8 +170,8 @@ def render_loop(epd):
             current_screen = all_screens[current_index]
             current_screen['initiated'] = False
 
-        
-        
+        time.sleep(60)
+
 
 if __name__ == '__main__':
     try:
@@ -186,7 +180,7 @@ if __name__ == '__main__':
         epd = epd2in13.EPD()
         logging.info("Clearing Screen...")
 
-        render_loop(epd)
+        main_loop(epd)
             
     except IOError as e:
         logging.info(e)
