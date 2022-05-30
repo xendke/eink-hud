@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 from utils import get_date, get_time, with_interval
 from draw import draw_news, draw_weather, draw_time, draw_date, font_square, white, black
-from assets import background_full
+from assets import background
 from const import HEIGHT, WIDTH
 
 logging.basicConfig(
@@ -21,7 +21,7 @@ def render_weather(epd, iteration):
     epd.Clear(0x00)
 
     canvas = Image.new('1', (HEIGHT, WIDTH), white)
-    canvas.paste(background_full, (0,0))
+    canvas.paste(background, (0,0))
 
     draw = ImageDraw.Draw(canvas)
     
@@ -34,6 +34,8 @@ def render_weather(epd, iteration):
 
     epd.display(epd.getbuffer(canvas))
     epd.sleep()
+    
+    canvas.save("1weather.jpeg")
 
     def update():
         nonlocal previous_date
@@ -73,7 +75,7 @@ def render_news(epd, iteration):
     epd.Clear(0x00)
 
     canvas = Image.new('1', (HEIGHT, WIDTH), white)
-    canvas.paste(background_full, (0,0))
+    canvas.paste(background, (0,0))
 
     draw = ImageDraw.Draw(canvas)
     
@@ -82,7 +84,7 @@ def render_news(epd, iteration):
     previous_date = draw_date(draw)
     previous_time = draw_time(draw)
 
-    news = draw_news(draw)
+    news = draw_news(draw, 2)
 
     epd.display(epd.getbuffer(canvas))
     epd.sleep()
